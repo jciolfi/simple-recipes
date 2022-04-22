@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 
 export default function addRecipeRoutes(app: Express) {
     // ping server, verify working
-    app.get('/testtest', BodyParser.json(), (req, res) => {
+    app.get('/testtest', BodyParser.json(), (_, res) => {
         res.status(StatusCodes.OK).json('testtest');
     });
 }
