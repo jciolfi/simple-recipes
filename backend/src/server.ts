@@ -2,7 +2,7 @@ import Express = require('express');
 import * as http from 'http';
 import CORS = require('cors');
 import BodyParser = require('body-parser');
-import addRecipeRoutes from './router/recipe';
+import addRecipeRoutes from './router/recipes';
 import { AddressInfo } from 'net';
 
 const app = Express();
