@@ -100,10 +100,10 @@ export function getRecipesByCriteria(
 ): Promise<RecipeResponse[]> {
   let criteria: string[] = [];
   if (title) {
-    criteria.push(`r.title = ${title}`);
+    criteria.push(`r.title LIKE '%${title}%'`);
   }
   if (user) {
-    criteria.push(`r.author_id = ${user}`);
+    criteria.push(`u.user_id = ${user}`);
   }
   if (tags) {
     tags.forEach(tag => {
@@ -130,6 +130,7 @@ export function getRecipesByCriteria(
     (
       SELECT
         r.recipe_id,
+        u.user_id,
         u.username,
         r.title,
         r.prep_time,
@@ -156,14 +157,13 @@ export function getRecipesByCriteria(
     ) as T
     GROUP BY recipe_id, tags, tools;`
   
-    console.log(query);
     return new Promise((resolve, reject) => {
       connection.query(query, [], (error, results, _fields) => {
         if (error) {
           reject(error);
         } else {
           let recipes: RecipeResponse[] = [];
-          
+
           results.forEach(result => {
             const ingredients: { ingredientName: string, amount: number }[] = [];
             results[0].ingredients.split('@@').forEach(i => {
