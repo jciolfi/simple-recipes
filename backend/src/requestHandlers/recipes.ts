@@ -1,8 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
-import { getRecipeByID, getRecipesByCriteria, createRecipe, getMaxRecipeID, deleteRecipeByID } from '../respository/recipes';
-import { CreateRecipeRequest, CreateRecipeResponse, Recipe, ResponseEnvelope } from '../types/APITypes';
+import { getRecipeByID, getRecipesByCriteria, createRecipe, getMaxRecipeID, deleteRecipeByID, updateRecipe } from '../respository/recipes';
+import { RecipeRequest, CreateRecipeResponse, RecipeResponse, ResponseEnvelope } from '../types/APITypes';
 
-export async function getRecipeByIDHandler(recipeID: string): Promise<ResponseEnvelope<Recipe>> {
+export async function getRecipeByIDHandler(recipeID: string): Promise<ResponseEnvelope<RecipeResponse>> {
   if (!recipeID || isNaN(+recipeID)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
@@ -22,7 +22,7 @@ export async function getRecipesByCriteriaHandler(
   title: string | undefined,
   user: string | undefined,
   tags: string | undefined
-): Promise<ResponseEnvelope<Recipe[]>> {
+): Promise<ResponseEnvelope<RecipeResponse[]>> {
   if (user && isNaN(+user)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
@@ -42,13 +42,16 @@ export async function getRecipesByCriteriaHandler(
   }
 }
 
-export async function createRecipeHandler(recipe: CreateRecipeRequest): Promise<ResponseEnvelope<CreateRecipeResponse>> {
-  const recipeID = await getMaxRecipeID();
-  if (!recipeID || recipe.recipeID <= 0) {
+export async function createRecipeHandler(recipe: RecipeRequest): Promise<ResponseEnvelope<CreateRecipeResponse>> {
+  let maxRecipeID: number;
+  try {
+    maxRecipeID = await getMaxRecipeID();
+  } catch {
     throw new Error('Issue creating new recipe, could not find unique ID');
   }
 
-  recipe.recipeID = recipeID + 1;
+  recipe.recipeID = maxRecipeID + 1;
+  console.log(recipe);
   const newRecipe = await createRecipe(recipe);
 
   return {
@@ -70,4 +73,22 @@ export async function deleteRecipeByIDHandler(recipeID: string): Promise<Respons
     statusCode: StatusCodes.OK,
     payload: {}
   }
+}
+
+export async function updateRecipeHandler(recipeID: string, recipe: RecipeRequest): Promise<ResponseEnvelope<RecipeResponse>> {
+  if (!recipeID || isNaN(+recipeID)) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Error deleteRecipeByID: valid recipeID must be specified (ID: ${recipeID})`
+    }
+  }
+
+  recipe.recipeID = +recipeID;
+  const updateSuccess = await updateRecipe(recipe);
+
+  return updateSuccess
+  ? { statusCode: StatusCodes.OK, payload: (await getRecipeByID(+recipeID)) }
+  : { statusCode: StatusCodes.BAD_REQUEST, 
+      message: `Error updateRecipe: failed to update recipe (ID: ${recipeID}` 
+    };
 }

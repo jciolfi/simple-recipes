@@ -6,7 +6,7 @@ export interface ResponseEnvelope<T> {
   payload?: T;
 }
 
-export interface Recipe {
+export interface RecipeResponse {
   recipeID: number;
   authorID: number;
   authorName: string;
@@ -19,7 +19,7 @@ export interface Recipe {
   tags: {tagID: number, tagName: string}[];
 }
 
-export interface CreateRecipeRequest {
+export interface RecipeRequest {
   recipeID: number;
   authorID: number;
   title: string;
