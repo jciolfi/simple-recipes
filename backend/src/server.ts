@@ -5,6 +5,7 @@ import BodyParser = require('body-parser');
 import addRecipeRoutes from './router/recipes';
 import { AddressInfo } from 'net';
 import { StatusCodes } from 'http-status-codes';
+import addUserRoutes from './router/users';
 
 const app = Express();
 app.use(CORS());
@@ -16,6 +17,7 @@ app.get('/testtest', BodyParser.json(), (_, res) => {
   res.status(StatusCodes.OK).json('running');
 });
 addRecipeRoutes(app);
+addUserRoutes(app);
 
 server.listen(8080, () => {
     const address = server.address() as AddressInfo;

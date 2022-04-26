@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import mysql from 'mysql';
-import { RecipeRequest, CreateRecipeResponse, RecipeResponse } from '../types/APITypes';
+import { UpsertRecipeRequest, CreateRecipeResponse, RecipeResponse } from '../types/APITypes';
 
 const config = dotenv.config();
 const connection = mysql.createConnection({
@@ -152,14 +152,14 @@ export function getRecipesByCriteria(
     });
 }
 
-export function updateRecipe(recipe: RecipeRequest): Promise<boolean> {
+export function updateRecipe(recipeID: number, recipe: UpsertRecipeRequest): Promise<boolean> {
   const recipePlaceholders = [
     recipe.authorID,
     recipe.title,
     recipe.prepTime,
     recipe.servings,
     recipe.instructions,
-    recipe.recipeID
+    recipeID
   ];
   const recipeUpdate =
   `UPDATE recipes
@@ -170,7 +170,7 @@ export function updateRecipe(recipe: RecipeRequest): Promise<boolean> {
       instructions = ?
   WHERE recipe_id = ?`;
 
-  const deletePlaceholders = [recipe.recipeID];
+  const deletePlaceholders = [recipeID];
   const ingredientsDelete = `DELETE FROM recipe_ingredients WHERE recipe_id = ?`;
   const toolsDelete = `DELETE FROM recipe_tools WHERE recipe_id = ?`;
   const tagsDelete = `DELETE FROM recipe_tags WHERE recipe_id = ?`;
@@ -207,7 +207,7 @@ export function updateRecipe(recipe: RecipeRequest): Promise<boolean> {
     });
     
     try {
-      insertRecipeAssociations(recipe);
+      insertRecipeAssociations(recipeID, recipe);
     } catch (error) {
       console.log('caught error');
       console.log(error);
@@ -218,9 +218,9 @@ export function updateRecipe(recipe: RecipeRequest): Promise<boolean> {
   });
 }
 
-export function createRecipe(recipe: RecipeRequest): Promise<CreateRecipeResponse> {
+export function createRecipe(recipeID: number, recipe: UpsertRecipeRequest): Promise<CreateRecipeResponse> {
   const recipePlaceholders = [
-    recipe.recipeID,
+    recipeID,
     recipe.authorID,
     recipe.title,
     recipe.prepTime,
@@ -237,24 +237,22 @@ export function createRecipe(recipe: RecipeRequest): Promise<CreateRecipeRespons
     });
 
     try {
-      insertRecipeAssociations(recipe);
+      insertRecipeAssociations(recipeID, recipe);
     } catch (error) {
       // Flush recipe with recipeID; make sure none of it is in DB
-      deleteRecipeByID(recipe.recipeID);
+      deleteRecipeByID(recipeID);
       reject (error);
     }
 
-    resolve({
-      recipeID: recipe.recipeID
-    });
+    resolve({ recipeID });
   });
 }
 
-function insertRecipeAssociations(recipe: RecipeRequest) {
+function insertRecipeAssociations(recipeID: number, recipe: UpsertRecipeRequest) {
   // Insert into recipe_ingredients table
   const ingredientVals: string[] = [];
   recipe.ingredients.forEach(i => {
-    ingredientVals.push(`(${recipe.recipeID}, '${i.ingredientName}', ${i.amount})`);
+    ingredientVals.push(`(${recipeID}, '${i.ingredientName}', ${i.amount})`);
   });
   const ingredientsInsert = 
   `INSERT INTO recipe_ingredients (recipe_id, ingredient_name, amount)
@@ -266,7 +264,7 @@ function insertRecipeAssociations(recipe: RecipeRequest) {
   // Insert into recipe_tools table
   const toolVals: string[] = [];
   recipe.tools.forEach(t => {
-    toolVals.push(`(${recipe.recipeID}, ${t})`);
+    toolVals.push(`(${recipeID}, ${t})`);
   });
   const toolsInsert = 
   `INSERT INTO recipe_tools (recipe_id, tool_id)
@@ -278,7 +276,7 @@ function insertRecipeAssociations(recipe: RecipeRequest) {
   // Insert into recipe_tags table
   const tagVals: string[] = [];
   recipe.tags.forEach(t => {
-    tagVals.push(`(${recipe.recipeID}, ${t})`);
+    tagVals.push(`(${recipeID}, ${t})`);
   });
   const tagsInsert =
   `INSERT INTO recipe_tags (recipe_id, tag_id)

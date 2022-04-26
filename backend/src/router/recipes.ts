@@ -9,7 +9,6 @@ export default function addRecipeRoutes(app: Express) {
   app.post('/recipes', BodyParser.json(), async (req, res) => {
     try {
       const envelope = await createRecipeHandler({
-        recipeID: 0,
         authorID: req.body.authorID,
         title: req.body.title,
         prepTime: req.body.prepTime,
@@ -36,7 +35,6 @@ export default function addRecipeRoutes(app: Express) {
   app.put('/recipes/:recipeID', BodyParser.json(), async (req, res) => {
     try {
       const envelope = await updateRecipeHandler(req.params.recipeID, {
-        recipeID: 0,
         authorID: req.body.authorID,
         title: req.body.title,
         prepTime: req.body.prepTime,
@@ -52,6 +50,7 @@ export default function addRecipeRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.message);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `PUT recipe with ID ${req.params.recipeID} internal error`
       });

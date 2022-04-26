@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { getRecipeByID, getRecipesByCriteria, createRecipe, getMaxRecipeID, deleteRecipeByID, updateRecipe } from '../respository/recipes';
-import { RecipeRequest, CreateRecipeResponse, RecipeResponse, ResponseEnvelope } from '../types/APITypes';
+import { UpsertRecipeRequest, CreateRecipeResponse, RecipeResponse, ResponseEnvelope } from '../types/APITypes';
 
 export async function getRecipeByIDHandler(recipeID: string): Promise<ResponseEnvelope<RecipeResponse>> {
   if (!recipeID || isNaN(+recipeID)) {
@@ -42,7 +42,7 @@ export async function getRecipesByCriteriaHandler(
   }
 }
 
-export async function createRecipeHandler(recipe: RecipeRequest): Promise<ResponseEnvelope<CreateRecipeResponse>> {
+export async function createRecipeHandler(recipe: UpsertRecipeRequest): Promise<ResponseEnvelope<CreateRecipeResponse>> {
   let maxRecipeID: number;
   try {
     maxRecipeID = await getMaxRecipeID();
@@ -50,9 +50,7 @@ export async function createRecipeHandler(recipe: RecipeRequest): Promise<Respon
     throw new Error('Issue creating new recipe, could not find unique ID');
   }
 
-  recipe.recipeID = maxRecipeID + 1;
-  console.log(recipe);
-  const newRecipe = await createRecipe(recipe);
+  const newRecipe = await createRecipe(maxRecipeID + 1, recipe);
 
   return {
     statusCode: StatusCodes.CREATED,
@@ -75,7 +73,7 @@ export async function deleteRecipeByIDHandler(recipeID: string): Promise<Respons
   }
 }
 
-export async function updateRecipeHandler(recipeID: string, recipe: RecipeRequest): Promise<ResponseEnvelope<RecipeResponse>> {
+export async function updateRecipeHandler(recipeID: string, recipe: UpsertRecipeRequest): Promise<ResponseEnvelope<RecipeResponse>> {
   if (!recipeID || isNaN(+recipeID)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
@@ -83,12 +81,11 @@ export async function updateRecipeHandler(recipeID: string, recipe: RecipeReques
     }
   }
 
-  recipe.recipeID = +recipeID;
-  const updateSuccess = await updateRecipe(recipe);
+  const updateSuccess = await updateRecipe(+recipeID, recipe);
 
   return updateSuccess
   ? { statusCode: StatusCodes.OK, payload: (await getRecipeByID(+recipeID)) }
   : { statusCode: StatusCodes.BAD_REQUEST, 
-      message: `Error updateRecipe: failed to update recipe (ID: ${recipeID}` 
+      message: `Error updateRecipe: failed to update recipe (ID: ${recipeID})` 
     };
 }
