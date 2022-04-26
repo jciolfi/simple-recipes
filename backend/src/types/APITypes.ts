@@ -6,15 +6,31 @@ export interface ResponseEnvelope<T> {
   payload?: T;
 }
 
-export interface RecipeResponse {
-  recipeID: string;
-  authorID: string;
+export interface Recipe {
+  recipeID: number;
+  authorID: number;
   authorName: string;
   title: string;
   prepTime: number;
   servings: number;
   instructions: string;
   ingredients: { ingredientName: string, amount: number }[];
-  tools: {toolID: string, toolName: string }[];
-  tags: {tagID: string, tagName: string}[];
+  tools: {toolID: number, toolName: string }[];
+  tags: {tagID: number, tagName: string}[];
+}
+
+export interface CreateRecipeRequest {
+  recipeID: number;
+  authorID: number;
+  title: string;
+  prepTime: number;
+  servings: number;
+  instructions: string;
+  ingredients: { ingredientName: string, amount: number }[];
+  tools: number[];
+  tags: number[];
+}
+
+export interface CreateRecipeResponse {
+  recipeID: number;
 }

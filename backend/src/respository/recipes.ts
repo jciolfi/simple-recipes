@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import mysql from 'mysql';
-import { resolve } from 'path';
-import { RecipeResponse } from '../types/APITypes';
+import { CreateRecipeRequest, CreateRecipeResponse, Recipe } from '../types/APITypes';
 
 const config = dotenv.config();
 const connection = mysql.createConnection({
@@ -19,7 +18,7 @@ connection.connect((err) => {
   }
 });
 
-export function getRecipeByID(recipeID: number): Promise<RecipeResponse | undefined> {
+export function getRecipeByID(recipeID: number): Promise<Recipe | undefined> {
   const placeholders = [recipeID];
   const query = 
     `SELECT
@@ -74,7 +73,7 @@ export function getRecipeByID(recipeID: number): Promise<RecipeResponse | undefi
           ingredients.push({ ingredientName: items[0], amount: +items[1] });
         });
 
-        let recipe: RecipeResponse = {
+        let recipe: Recipe = {
           recipeID: results[0].recipe_id,
           authorID: results[0].user_id,
           authorName: results[0].username,
@@ -97,7 +96,7 @@ export function getRecipesByCriteria(
   title: string | undefined,
   user: number | undefined,
   tags: string[] | undefined
-): Promise<RecipeResponse[]> {
+): Promise<Recipe[]> {
   let criteria: string[] = [];
   if (title) {
     criteria.push(`r.title LIKE '%${title}%'`);
@@ -162,7 +161,7 @@ export function getRecipesByCriteria(
         if (error) {
           reject(error);
         } else {
-          let recipes: RecipeResponse[] = [];
+          let recipes: Recipe[] = [];
 
           results.forEach(result => {
             const ingredients: { ingredientName: string, amount: number }[] = [];
@@ -188,5 +187,92 @@ export function getRecipesByCriteria(
           resolve(recipes);
         }
       });
+    });
+}
+
+export function createRecipe(recipe: CreateRecipeRequest): Promise<CreateRecipeResponse> {
+  const placeholders = [
+    recipe.recipeID,
+    recipe.authorID,
+    recipe.title,
+    recipe.prepTime,
+    recipe.servings,
+    recipe.instructions
+  ];
+  const recipeInsert =
+  `INSERT INTO recipes (recipe_id, author_id, title, prep_time, servings, instructions)
+  VALUES (?, ?, ?, ?, ?, ?);`;
+
+  const ingredientVals: string[] = [];
+  recipe.ingredients.forEach(i => {
+    ingredientVals.push(`(${recipe.recipeID}, '${i.ingredientName}', ${i.amount})`);
+  });
+  const ingredientsInsert = 
+  `INSERT INTO recipe_ingredients (recipe_id, ingredient_name, amount)
+  VALUES ${ingredientVals.join(', ')};`;
+
+  const toolVals: string[] = [];
+  recipe.tools.forEach(t => {
+    toolVals.push(`(${recipe.recipeID}, ${t})`);
+  });
+  const toolsInsert = 
+  `INSERT INTO recipe_tools (recipe_id, tool_id)
+  VALUES ${toolVals.join(', ')};`;
+
+  const tagVals: string[] = [];
+  recipe.tags.forEach(t => {
+    tagVals.push(`(${recipe.recipeID}, ${t})`);
+  });
+  const tagsInsert =
+  `INSERT INTO recipe_tags (recipe_id, tag_id)
+  VALUES ${tagVals.join(', ')};`;
+  
+  return new Promise((resolve, reject) => {
+    connection.query(recipeInsert, placeholders, (error, _results, _fields) => {
+      if (error) reject(error);
+    });
+    connection.query(ingredientsInsert, [], (error, _results, _fields) => {
+      if (error) reject(error);
+    });
+    connection.query(toolsInsert, [], (error, _results, _fields) => {
+      if (error) reject(error);
+    });
+    connection.query(tagsInsert, [], (error, _results, _fields) => {
+      if (error) reject(error);
+    });
+
+    resolve({
+      recipeID: recipe.recipeID
+    });
+  });
+}
+
+export function getMaxRecipeID(): Promise<number | undefined> {
+  const query = `SELECT max(recipe_id) AS max_recipe_id FROM recipes`;
+  return new Promise((resolve, reject) => {
+    connection.query(query, [], (error, results, _fields) => {
+      if (error) {
+        reject(error)
+      } else if (!results || results.length === 0) {
+        resolve(undefined);
+      } else {
+        resolve(results[0].max_recipe_id);
+      }
+    });
+  })
+}
+
+export function deleteRecipeByID(recipeID: number): Promise<{}> {
+  const placeholders = [recipeID];
+  const query = `DELETE FROM recipes WHERE recipe_id = ?`;
+
+  return new Promise((resolve, reject) => {
+    connection.query(query, placeholders, (error, _results, _fields) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({});
+      }
     })
+  });
 }
