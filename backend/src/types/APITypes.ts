@@ -54,3 +54,8 @@ export interface CreateUserRequest {
   pass: string;
   username: string;
 }
+
+export interface LoginUserResponse {
+  authenticated: boolean;
+  userID?: number;
+}

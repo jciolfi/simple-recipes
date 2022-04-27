@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import BodyParser = require('body-parser');
 import { StatusCodes } from 'http-status-codes';
-import { createUserHandler, deleteUserByIDHandler, getUserByIDHandler } from '../requestHandlers/users';
+import { createUserHandler, deleteUserByIDHandler, getUserByIDHandler, loginUserHandler } from '../requestHandlers/users';
 
 export default function addUserRoutes(app: Express) {
   // POST user
@@ -13,6 +13,26 @@ export default function addUserRoutes(app: Express) {
         username: req.body.username
       });
       if (envelope.statusCode === StatusCodes.CREATED) {
+        res.status(envelope.statusCode).json(envelope.payload);
+      } else {
+        res.status(envelope.statusCode).json(envelope.message);
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: `POST users internal error`
+      });
+    }
+  });
+
+  // GET user successful login
+  app.get('/users/login', BodyParser.json(), async (req, res) => {
+    try {
+      const envelope = await loginUserHandler(
+        req.body.email, 
+        req.body.pass
+      );
+      if (envelope.statusCode === StatusCodes.OK) {
         res.status(envelope.statusCode).json(envelope.payload);
       } else {
         res.status(envelope.statusCode).json(envelope.message);

@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import mysql from 'mysql';
-import { CreateUserRequest, UserResponse } from '../types/APITypes';
+import { CreateUserRequest, LoginUserResponse, UserResponse } from '../types/APITypes';
 
 const config = dotenv.config();
 const connection = mysql.createConnection({
@@ -116,13 +116,37 @@ export function deleteUserByID(userID: number): Promise<{}> {
   const usersQuery = `DELETE FROM users WHERE user_id = ?;`;
 
   return new Promise((resolve, reject) => {
-    connection.query(recipesQuery, placeholders, (error, results, _fields) => {
+    connection.query(recipesQuery, placeholders, (error, _results, _fields) => {
       if (error) reject(error);
     });
-    connection.query(usersQuery, placeholders, (error, results, _fields) => {
+    connection.query(usersQuery, placeholders, (error, _results, _fields) => {
       if (error) reject(error);
     });
 
     resolve({});
   })
+}
+
+export function loginUser(email: string, pass: string): Promise<LoginUserResponse> {
+  const placeholders = [email, pass];
+  const query = `SELECT account_exists(?, ?) AS userID`;
+
+  return new Promise((resolve, reject) => {
+    connection.query(query, placeholders, (error, results, _fields) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (!results || results.length == 0) {
+          resolve({
+            authenticated: false
+          });
+        } else {
+          resolve({
+            authenticated: true,
+            userID: results[0].userID
+          });
+        }
+      }
+    });
+  });
 }

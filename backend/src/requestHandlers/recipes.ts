@@ -43,6 +43,13 @@ export async function getRecipesByCriteriaHandler(
 }
 
 export async function createRecipeHandler(recipe: UpsertRecipeRequest): Promise<ResponseEnvelope<CreateRecipeResponse>> {
+  if (malformedRecipeDetails(recipe)) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Must specify all fields when creating a recipe`
+    };
+  }
+
   let maxRecipeID: number;
   try {
     maxRecipeID = await getMaxRecipeID();
@@ -74,6 +81,13 @@ export async function deleteRecipeByIDHandler(recipeID: string): Promise<Respons
 }
 
 export async function updateRecipeHandler(recipeID: string, recipe: UpsertRecipeRequest): Promise<ResponseEnvelope<RecipeResponse>> {
+  if (malformedRecipeDetails(recipe)) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Must specify all fields when creating a recipe`
+    };
+  }
+
   if (!recipeID || isNaN(+recipeID)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
@@ -104,4 +118,11 @@ export async function getTagsHandler(): Promise<ResponseEnvelope<RecipeTagsRespo
     statusCode: StatusCodes.OK,
     payload: tags
   };
+}
+
+function malformedRecipeDetails(recipe: UpsertRecipeRequest): boolean {
+  return !recipe || recipe.authorID === undefined || recipe.ingredients === undefined
+    || !recipe.instructions || recipe.prepTime === undefined 
+    || recipe.servings === undefined || recipe.tags === undefined
+    || !recipe.title || recipe.tools === undefined;
 }

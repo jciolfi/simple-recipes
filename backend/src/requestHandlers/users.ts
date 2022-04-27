@@ -1,9 +1,16 @@
 import { StatusCodes } from "http-status-codes";
-import { createUser, deleteUserByID, getMaxUserID, getUserByID, isUniqueEmail, isUniqueUsername } from "../respository/users";
-import { CreateUserRequest, UserResponse, ResponseEnvelope } from "../types/APITypes";
+import { createUser, deleteUserByID, getMaxUserID, getUserByID, isUniqueEmail, isUniqueUsername, loginUser } from "../respository/users";
+import { CreateUserRequest, UserResponse, ResponseEnvelope, LoginUserResponse } from "../types/APITypes";
 
 
 export async function createUserHandler(user: CreateUserRequest): Promise<ResponseEnvelope<UserResponse>> {
+  if (!user || !user.email || !user.pass || !user.username) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: "Must specify user email, pass, and username to create an account"
+    };
+  }
+
   let maxUserID: number;
   try {
     maxUserID = await getMaxUserID();
@@ -11,6 +18,7 @@ export async function createUserHandler(user: CreateUserRequest): Promise<Respon
     throw new Error('Issue creating new recipe, could not find unique ID');
   }
 
+  user.email = user.email.toLowerCase();
   // check valid email
   const regexp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
   if (!regexp.test(user.email)) {
@@ -65,7 +73,7 @@ export async function getUserByIDHandler(userID: string): Promise<ResponseEnvelo
     return {
       statusCode: StatusCodes.BAD_REQUEST,
       message: `Error getUserByID: valid userID must be specified (ID: ${userID})`
-    }
+    };
   }
   
   const user = await getUserByID(+userID);
@@ -89,5 +97,24 @@ export async function deleteUserByIDHandler(userID: string): Promise<ResponseEnv
   return {
     statusCode: StatusCodes.OK,
     payload: {}
+  };
+}
+
+export async function loginUserHandler(
+  email: string, 
+  pass: string
+): Promise<ResponseEnvelope<LoginUserResponse>> {
+  const uniqueEmail = await isUniqueEmail(email);
+  if (uniqueEmail) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Error loginUser: no account for email ${email}` 
+    };
   }
+
+  const user = await loginUser(email, pass);
+  return {
+    statusCode: StatusCodes.OK,
+    payload: user
+  };
 }
