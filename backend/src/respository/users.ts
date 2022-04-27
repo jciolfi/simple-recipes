@@ -75,3 +75,37 @@ export function getUserByID(userID: number): Promise<UserResponse | undefined> {
     });
   });
 }
+
+export function isUniqueEmail(email: string): Promise<boolean> {
+  const placeholders = [email];
+  const query = `SELECT is_unique_email(?) AS unique_email;`;
+
+  return new Promise((resolve, reject) => {
+    connection.query(query, placeholders, (error, results, _fields) => {
+      if (error) {
+        reject(error);
+      } else if (!results || results.length === 0) {
+        reject('No result returned for is_unique_email');
+      } else {
+        resolve(!!results[0].unique_email);
+      }
+    });
+  });
+}
+
+export function isUniqueUsername(username: string): Promise<boolean> {
+  const placeholders = [username];
+  const query = `SELECT is_unique_username(?) AS unique_username;`;
+
+  return new Promise((resolve, reject) => {
+    connection.query(query, placeholders, (error, results, _fields) => {
+      if (error) {
+        reject(error);
+      } else if (!results || results.length === 0) {
+        reject('No result returned for is_unique_username');
+      } else {
+        resolve(!!results[0].unique_username);
+      }
+    });
+  });
+}

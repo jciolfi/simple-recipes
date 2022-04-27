@@ -26,7 +26,7 @@ export default function addUserRoutes(app: Express) {
   });
 
   // GET user by ID
-  app.get('/users/:userID', BodyParser.json, async (req, res) => {
+  app.get('/users/:userID', BodyParser.json(), async (req, res) => {
     try {
       const envelope = await getUserByIDHandler(req.params.userID);
       if (envelope.statusCode === StatusCodes.OK) {
@@ -40,5 +40,5 @@ export default function addUserRoutes(app: Express) {
         message: `GET user by ID ${req.params.userID} internal error`
       });
     }
-  })
+  });
 }
