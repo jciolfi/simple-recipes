@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { createUser, getMaxUserID, getUserByID } from "../respository/users";
+import { createUser, getMaxUserID, getUserByID, isUniqueEmail, isUniqueUsername } from "../respository/users";
 import { CreateUserRequest, UserResponse, ResponseEnvelope } from "../types/APITypes";
 
 
@@ -19,12 +19,26 @@ export async function createUserHandler(user: CreateUserRequest): Promise<Respon
       message: `Error createUser: invalid email ${user.email}` 
     };
   }
+  const uniqueEmail = await isUniqueEmail(user.email);
+  if (!uniqueEmail) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Error createUser: email ${user.email} already taken` 
+    };
+  }
 
   // check valid username (alphanumeric)
   if (!/\W|_/.test(user.username)) {
     return { 
       statusCode: StatusCodes.BAD_REQUEST,
       message: `Error createUser: invalid username ${user.username}` 
+    };
+  }
+  const uniqueUsername = await isUniqueUsername(user.username);
+  if (!uniqueUsername) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Error createUser: username ${user.username} already taken` 
     };
   }
 

@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { getRecipeByID, getRecipesByCriteria, createRecipe, getMaxRecipeID, deleteRecipeByID, updateRecipe } from '../respository/recipes';
-import { UpsertRecipeRequest, CreateRecipeResponse, RecipeResponse, ResponseEnvelope } from '../types/APITypes';
+import { getRecipeByID, getRecipesByCriteria, createRecipe, getMaxRecipeID, deleteRecipeByID, updateRecipe, getTools, getTags } from '../respository/recipes';
+import { UpsertRecipeRequest, CreateRecipeResponse, RecipeResponse, ResponseEnvelope, RecipeToolsResponse, RecipeTagsResponse } from '../types/APITypes';
 
 export async function getRecipeByIDHandler(recipeID: string): Promise<ResponseEnvelope<RecipeResponse>> {
   if (!recipeID || isNaN(+recipeID)) {
@@ -88,4 +88,20 @@ export async function updateRecipeHandler(recipeID: string, recipe: UpsertRecipe
   : { statusCode: StatusCodes.BAD_REQUEST, 
       message: `Error updateRecipe: failed to update recipe (ID: ${recipeID})` 
     };
+}
+
+export async function getToolsHandler(): Promise<ResponseEnvelope<RecipeToolsResponse>> {
+  const tools = await getTools();
+  return {
+    statusCode: StatusCodes.OK,
+    payload: tools
+  };
+}
+
+export async function getTagsHandler(): Promise<ResponseEnvelope<RecipeTagsResponse>> {
+  const tags = await getTags();
+  return {
+    statusCode: StatusCodes.OK,
+    payload: tags
+  };
 }

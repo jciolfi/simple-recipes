@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import mysql from 'mysql';
-import { UpsertRecipeRequest, CreateRecipeResponse, RecipeResponse } from '../types/APITypes';
+import { UpsertRecipeRequest, CreateRecipeResponse, RecipeResponse, RecipeTagsResponse, RecipeToolsResponse } from '../types/APITypes';
 
 const config = dotenv.config();
 const connection = mysql.createConnection({
@@ -168,7 +168,7 @@ export function updateRecipe(recipeID: number, recipe: UpsertRecipeRequest): Pro
       prep_time = ?,
       servings = ?,
       instructions = ?
-  WHERE recipe_id = ?`;
+  WHERE recipe_id = ?;`;
 
   const deletePlaceholders = [recipeID];
   const ingredientsDelete = `DELETE FROM recipe_ingredients WHERE recipe_id = ?`;
@@ -287,7 +287,7 @@ function insertRecipeAssociations(recipeID: number, recipe: UpsertRecipeRequest)
 }
 
 export function getMaxRecipeID(): Promise<number> {
-  const query = `SELECT max(recipe_id) AS max_recipe_id FROM recipes`;
+  const query = `SELECT max(recipe_id) AS max_recipe_id FROM recipes;`;
   return new Promise((resolve, reject) => {
     connection.query(query, [], (error, results, _fields) => {
       if (error) {
@@ -303,7 +303,7 @@ export function getMaxRecipeID(): Promise<number> {
 
 export function deleteRecipeByID(recipeID: number): Promise<{}> {
   const placeholders = [recipeID];
-  const query = `DELETE FROM recipes WHERE recipe_id = ?`;
+  const query = `DELETE FROM recipes WHERE recipe_id = ?;`;
 
   return new Promise((resolve, reject) => {
     connection.query(query, placeholders, (error, _results, _fields) => {
@@ -313,5 +313,43 @@ export function deleteRecipeByID(recipeID: number): Promise<{}> {
         resolve({});
       }
     })
+  });
+}
+
+export function getTools(): Promise<RecipeToolsResponse> {
+  const query = `SELECT * FROM tools;`;
+
+  return new Promise((resolve, reject) => {
+    connection.query(query, [], (error, results, _fields) => {
+      if (error) {
+        reject(error);
+      } else {
+        const tools: { toolID: number, toolName: string }[] = [];
+        results.forEach(row => {
+          tools.push({ toolID: row.tool_id, toolName: row.tool_name });
+        });
+
+        resolve({ tools: tools });
+      }
+    });
+  });
+}
+
+export function getTags(): Promise<RecipeTagsResponse> {
+  const query = `SELECT * FROM tags;`
+
+  return new Promise((resolve, reject) => {
+    connection.query(query, [], (error, results, _fields) => {
+      if (error) {
+        reject(error);
+      } else {
+        const tags: { tagID: number, tagName: string }[] = [];
+        results.forEach(row => {
+          tags.push({ tagID: row.tag_id, tagName: row.tag_name });
+        });
+
+        resolve({ tags: tags });
+      }
+    });
   });
 }

@@ -35,6 +35,14 @@ export interface CreateRecipeResponse {
   recipeID: number;
 }
 
+export interface RecipeToolsResponse {
+  tools: { toolID: number, toolName: string }[];
+}
+
+export interface RecipeTagsResponse {
+  tags: { tagID: number, tagName: string }[];
+}
+
 // --- Users ---
 export interface UserResponse {
   userID: number;

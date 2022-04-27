@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import BodyParser = require('body-parser');
 import { StatusCodes } from 'http-status-codes';
-import { createRecipeHandler, deleteRecipeByIDHandler, getRecipeByIDHandler, getRecipesByCriteriaHandler, updateRecipeHandler } from '../requestHandlers/recipes';
+import { createRecipeHandler, deleteRecipeByIDHandler, getRecipeByIDHandler, getRecipesByCriteriaHandler, getTagsHandler, getToolsHandler, updateRecipeHandler } from '../requestHandlers/recipes';
 
 
 export default function addRecipeRoutes(app: Express) {
@@ -53,6 +53,39 @@ export default function addRecipeRoutes(app: Express) {
       console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `PUT recipe with ID ${req.params.recipeID} internal error`
+      });
+    }
+  });
+
+  // GET tools available for recipes
+  app.get('/recipes/tools', BodyParser.json(), async (req, res) => {
+    console.log('hit tools');
+    try {
+      const envelope = await getToolsHandler();
+      if (envelope.statusCode === StatusCodes.OK) {
+        res.status(envelope.statusCode).json(envelope.payload);
+      } else {
+        res.status(envelope.statusCode).json(envelope.message);
+      }
+    } catch (err) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: `GET recipe by criteria internal error`
+      });
+    }
+  });
+
+  // GET tags available for recipes
+  app.get('/recipes/tags', BodyParser.json(), async (req, res) => {
+    try {
+      const envelope = await getTagsHandler();
+      if (envelope.statusCode === StatusCodes.OK) {
+        res.status(envelope.statusCode).json(envelope.payload);
+      } else {
+        res.status(envelope.statusCode).json(envelope.message);
+      }
+    } catch (err) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: `GET recipe by criteria internal error`
       });
     }
   });
