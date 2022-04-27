@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { createUser, getMaxUserID, getUserByID, isUniqueEmail, isUniqueUsername } from "../respository/users";
+import { createUser, deleteUserByID, getMaxUserID, getUserByID, isUniqueEmail, isUniqueUsername } from "../respository/users";
 import { CreateUserRequest, UserResponse, ResponseEnvelope } from "../types/APITypes";
 
 
@@ -75,4 +75,19 @@ export async function getUserByIDHandler(userID: string): Promise<ResponseEnvelo
   : { statusCode: StatusCodes.NOT_FOUND, 
       message: `Error getRecipeByID: Could not find user with ID ${userID}`
     };
+}
+
+export async function deleteUserByIDHandler(userID: string): Promise<ResponseEnvelope<{}>> {
+  if (!userID || isNaN(+userID)) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Error getUserByID: valid userID must be specified (ID: ${userID})`
+    }
+  }
+  
+  await deleteUserByID(+userID);
+  return {
+    statusCode: StatusCodes.OK,
+    payload: {}
+  }
 }

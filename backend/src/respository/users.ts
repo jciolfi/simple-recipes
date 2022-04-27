@@ -109,3 +109,20 @@ export function isUniqueUsername(username: string): Promise<boolean> {
     });
   });
 }
+
+export function deleteUserByID(userID: number): Promise<{}> {
+  const placeholders = [userID];
+  const recipesQuery = `DELETE FROM recipes WHERE author_id = ?;`;
+  const usersQuery = `DELETE FROM users WHERE user_id = ?;`;
+
+  return new Promise((resolve, reject) => {
+    connection.query(recipesQuery, placeholders, (error, results, _fields) => {
+      if (error) reject(error);
+    });
+    connection.query(usersQuery, placeholders, (error, results, _fields) => {
+      if (error) reject(error);
+    });
+
+    resolve({});
+  })
+}

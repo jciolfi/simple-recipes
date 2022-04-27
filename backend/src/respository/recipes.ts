@@ -63,7 +63,7 @@ export function getRecipesByCriteria(
   if (title) {
     criteria.push(`r.title LIKE '%${title}%'`);
   }
-  if (user) {
+  if (user !== undefined) {
     criteria.push(`u.user_id = ${user}`);
   }
   if (tags) {
@@ -178,30 +178,22 @@ export function updateRecipe(recipeID: number, recipe: UpsertRecipeRequest): Pro
   return new Promise(async (resolve, reject) => {
     connection.query(recipeUpdate, recipePlaceholders, (error, _results, _fields) => {
       if (error) {
-        console.log('update');
-        console.log(error);
         reject(error);
       }
     });
 
     connection.query(ingredientsDelete, deletePlaceholders, (error, _results, _fields) => {
       if (error) {
-        console.log('ingredients delete');
-        console.log(error);
         reject(error);
       }
     });
     connection.query(toolsDelete, deletePlaceholders, (error, _results, _fields) => {
       if (error) {
-        console.log('tools delete');
-        console.log(error);
         reject(error);
       }
     });
     connection.query(tagsDelete, deletePlaceholders, (error, _results, _fields) => {
       if (error) {
-        console.log('tags delete');
-        console.log(error);
         reject(error);
       }
     });
@@ -209,8 +201,6 @@ export function updateRecipe(recipeID: number, recipe: UpsertRecipeRequest): Pro
     try {
       insertRecipeAssociations(recipeID, recipe);
     } catch (error) {
-      console.log('caught error');
-      console.log(error);
       reject (error);
     }
 
