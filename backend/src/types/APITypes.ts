@@ -9,7 +9,6 @@ export interface ResponseEnvelope<T> {
 
 export interface RecipeResponse {
   recipeID: number;
-  authorID: number;
   authorName: string;
   title: string;
   prepTime: number;

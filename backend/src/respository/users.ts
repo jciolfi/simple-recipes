@@ -136,7 +136,7 @@ export function loginUser(email: string, pass: string): Promise<LoginUserRespons
       if (error) {
         reject(error);
       } else {
-        if (!results || results.length == 0) {
+        if (!results || results.length == 0 || results[0].userID === null) {
           resolve({
             authenticated: false
           });

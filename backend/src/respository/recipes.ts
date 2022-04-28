@@ -37,7 +37,6 @@ export function getRecipeByID(recipeID: number): Promise<RecipeResponse | undefi
 
         let recipe: RecipeResponse = {
           recipeID: results[0][0].recipe_id,
-          authorID: results[0][0].user_id,
           authorName: results[0][0].username,
           title: results[0][0].title,
           prepTime: results[0][0].prep_time,
@@ -134,7 +133,6 @@ export function getRecipesByCriteria(
 
             recipes.push({
               recipeID: result.recipe_id,
-              authorID: result.user_id,
               authorName: result.username,
               title: result.title,
               prepTime: result.prep_time,
