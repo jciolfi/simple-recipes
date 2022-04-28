@@ -177,25 +177,16 @@ export function updateRecipe(recipeID: number, recipe: UpsertRecipeRequest): Pro
 
   return new Promise(async (resolve, reject) => {
     connection.query(recipeUpdate, recipePlaceholders, (error, _results, _fields) => {
-      if (error) {
-        reject(error);
-      }
+      if (error) reject(error);
     });
-
     connection.query(ingredientsDelete, deletePlaceholders, (error, _results, _fields) => {
-      if (error) {
-        reject(error);
-      }
+      if (error) reject(error);
     });
     connection.query(toolsDelete, deletePlaceholders, (error, _results, _fields) => {
-      if (error) {
-        reject(error);
-      }
+      if (error) reject(error);
     });
     connection.query(tagsDelete, deletePlaceholders, (error, _results, _fields) => {
-      if (error) {
-        reject(error);
-      }
+      if (error) reject(error);
     });
     
     try {

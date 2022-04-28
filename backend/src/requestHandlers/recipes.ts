@@ -6,7 +6,7 @@ export async function getRecipeByIDHandler(recipeID: string): Promise<ResponseEn
   if (!recipeID || isNaN(+recipeID)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error getRecipeByID: valid recipeID must be specified (ID: ${recipeID})`
+      error: { message: `Valid recipeID must be specified (ID: ${recipeID})` }
     }
   }
 
@@ -14,7 +14,7 @@ export async function getRecipeByIDHandler(recipeID: string): Promise<ResponseEn
   return recipe
     ? { statusCode: StatusCodes.OK, payload: recipe }
     : { statusCode: StatusCodes.NOT_FOUND, 
-        message: `Error getRecipeByID: Could not find recipe with ID ${recipeID}`
+        error: { message: `Could not find recipe with ID ${recipeID}` }
       };
 }
 
@@ -26,7 +26,7 @@ export async function getRecipesByCriteriaHandler(
   if (user && isNaN(+user)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error getRecipesByCriteria: valid userID must be specified (ID: ${user})`
+      error: { message: `Valid userID must be specified (ID: ${user})` }
     }
   }
 
@@ -46,7 +46,7 @@ export async function createRecipeHandler(recipe: UpsertRecipeRequest): Promise<
   if (malformedRecipeDetails(recipe)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Must specify all fields when creating a recipe`
+      error: { message: `Must specify all fields when creating a recipe` }
     };
   }
 
@@ -56,6 +56,14 @@ export async function createRecipeHandler(recipe: UpsertRecipeRequest): Promise<
   } catch {
     throw new Error('Issue creating new recipe, could not find unique ID');
   }
+
+  if (recipe.ingredients.some(i => i.ingredientName.includes('@@') || i.ingredientName.includes('##'))) {
+    return {
+      statusCode: StatusCodes.BAD_REQUEST,
+      error: { message: `Recipe ingredients cannot include @@ or ##` }
+    }
+  }
+
 
   const newRecipe = await createRecipe(maxRecipeID + 1, recipe);
 
@@ -69,7 +77,7 @@ export async function deleteRecipeByIDHandler(recipeID: string): Promise<Respons
   if (!recipeID || isNaN(+recipeID)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error deleteRecipeByID: valid recipeID must be specified (ID: ${recipeID})`
+      error: { message: `Valid recipeID must be specified (ID: ${recipeID})` }
     }
   }
 
@@ -84,14 +92,14 @@ export async function updateRecipeHandler(recipeID: string, recipe: UpsertRecipe
   if (malformedRecipeDetails(recipe)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Must specify all fields when creating a recipe`
+      error: { message: `Must specify all fields when creating a recipe` }
     };
   }
 
   if (!recipeID || isNaN(+recipeID)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error deleteRecipeByID: valid recipeID must be specified (ID: ${recipeID})`
+      error: { message: `Valid recipeID must be specified (ID: ${recipeID})` }
     }
   }
 
@@ -99,8 +107,8 @@ export async function updateRecipeHandler(recipeID: string, recipe: UpsertRecipe
 
   return updateSuccess
   ? { statusCode: StatusCodes.OK, payload: (await getRecipeByID(+recipeID)) }
-  : { statusCode: StatusCodes.BAD_REQUEST, 
-      message: `Error updateRecipe: failed to update recipe (ID: ${recipeID})` 
+  : { statusCode: StatusCodes.INTERNAL_SERVER_ERROR, 
+      error: { message: `Failed to update recipe (ID: ${recipeID})` }
     };
 }
 

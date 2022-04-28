@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 export interface ResponseEnvelope<T> {
   statusCode: StatusCodes;
-  message?: string;
+  error?: { message: string};
   payload?: T;
 }
 

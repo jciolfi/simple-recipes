@@ -15,18 +15,17 @@ export default function addUserRoutes(app: Express) {
       if (envelope.statusCode === StatusCodes.CREATED) {
         res.status(envelope.statusCode).json(envelope.payload);
       } else {
-        res.status(envelope.statusCode).json(envelope.message);
+        res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
-      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `POST users internal error`
       });
     }
   });
 
-  // GET user successful login
-  app.get('/users/login', BodyParser.json(), async (req, res) => {
+  // POST new user session
+  app.post('/users/login', BodyParser.json(), async (req, res) => {
     try {
       const envelope = await loginUserHandler(
         req.body.email, 
@@ -35,12 +34,11 @@ export default function addUserRoutes(app: Express) {
       if (envelope.statusCode === StatusCodes.OK) {
         res.status(envelope.statusCode).json(envelope.payload);
       } else {
-        res.status(envelope.statusCode).json(envelope.message);
+        res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
-      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: `POST users internal error`
+        message: `POST user login internal error`
       });
     }
   });
@@ -52,10 +50,9 @@ export default function addUserRoutes(app: Express) {
       if (envelope.statusCode === StatusCodes.OK) {
         res.status(envelope.statusCode).json(envelope.payload);
       } else {
-        res.status(envelope.statusCode).json(envelope.message);
+        res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
-      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `GET user by ID ${req.params.userID} internal error`
       });
@@ -69,7 +66,7 @@ export default function addUserRoutes(app: Express) {
       if (envelope.statusCode === StatusCodes.OK) {
         res.status(envelope.statusCode).json(envelope.payload);
       } else {
-        res.status(envelope.statusCode).json(envelope.message);
+        res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

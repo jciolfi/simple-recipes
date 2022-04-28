@@ -4,12 +4,13 @@ import { CreateUserRequest, UserResponse, ResponseEnvelope, LoginUserResponse } 
 
 
 export async function createUserHandler(user: CreateUserRequest): Promise<ResponseEnvelope<UserResponse>> {
+  console.log(user);
   if (!user || !user.email || !user.pass || !user.username) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: "Must specify user email, pass, and username to create an account"
+      error: { message: `Must specify user email, pass, and username to create an account` }
     };
-  }
+  }  
 
   let maxUserID: number;
   try {
@@ -24,29 +25,30 @@ export async function createUserHandler(user: CreateUserRequest): Promise<Respon
   if (!regexp.test(user.email)) {
     return { 
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error createUser: invalid email ${user.email}` 
+      error: { message: `Invalid email ${user.email}` }
     };
   }
   const uniqueEmail = await isUniqueEmail(user.email);
   if (!uniqueEmail) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error createUser: email ${user.email} already taken` 
+      error: { message: `Email ${user.email} already taken` }
     };
   }
 
   // check valid username (alphanumeric)
-  if (!/\W|_/.test(user.username)) {
-    return { 
+  console.log(user.username);
+  if (/\W|_/.test(user.username)) {
+    return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error createUser: invalid username ${user.username}` 
+      error: { message: `Invalid username ${user.username}, username must be alphanumberic` }
     };
   }
   const uniqueUsername = await isUniqueUsername(user.username);
   if (!uniqueUsername) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error createUser: username ${user.username} already taken` 
+      error: { message: `Username ${user.username} already taken` }
     };
   }
 
@@ -54,7 +56,7 @@ export async function createUserHandler(user: CreateUserRequest): Promise<Respon
   if (/\s/.test(user.pass)) {
     return { 
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error createUser: invalid password; password cannot contain spaces` 
+      error: { message: `Invalid password; password cannot contain spaces` }
     };
   }
 
@@ -63,8 +65,8 @@ export async function createUserHandler(user: CreateUserRequest): Promise<Respon
   
   return success
   ? { statusCode: StatusCodes.CREATED, payload: (await getUserByID(userID)) }
-  : { statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error createUser: Could not create user` 
+  : { statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+      error: { message: `Could not create user` }
     };
 }
 
@@ -72,7 +74,7 @@ export async function getUserByIDHandler(userID: string): Promise<ResponseEnvelo
   if (!userID || isNaN(+userID)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error getUserByID: valid userID must be specified (ID: ${userID})`
+      error: { message: `Valid userID must be specified (ID: ${userID})` }
     };
   }
   
@@ -81,7 +83,7 @@ export async function getUserByIDHandler(userID: string): Promise<ResponseEnvelo
   return user
   ? { statusCode: StatusCodes.OK, payload: user }
   : { statusCode: StatusCodes.NOT_FOUND, 
-      message: `Error getRecipeByID: Could not find user with ID ${userID}`
+      error: { message: `Could not find user with ID ${userID}` }
     };
 }
 
@@ -89,7 +91,7 @@ export async function deleteUserByIDHandler(userID: string): Promise<ResponseEnv
   if (!userID || isNaN(+userID)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error getUserByID: valid userID must be specified (ID: ${userID})`
+      error: { message: `Valid userID must be specified (ID: ${userID})` }
     }
   }
   
@@ -108,7 +110,7 @@ export async function loginUserHandler(
   if (uniqueEmail) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      message: `Error loginUser: no account for email ${email}` 
+      error: { message: `No existing account with email ${email}` }
     };
   }
 
