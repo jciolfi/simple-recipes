@@ -194,6 +194,7 @@ def enter_recipe_details(author_id):
             assert (len(name) > 0)
             assert (not ('@@' in name or '##' in name))
             amount = input('Enter amount of ingredient used in recipe: ')
+            assert (len(amount) > 0)
             ingredient = {
                 'ingredientName': name,
                 'amount': amount
@@ -233,11 +234,13 @@ def enter_recipe_details(author_id):
         }
     except:
         print('Invalid input received. Please follow the prompts and enter the recipe again.\n')
-        enter_recipe_details(author_id)
+        return None
 
 
 def create_recipe_flow(user_id):
-    body = enter_recipe_details(user_id)
+    body = None
+    while body is None:
+        body = enter_recipe_details(user_id)
     create_resp = create_recipe(body)
     if create_resp['status_code'] == 201:
         print(f'Successfully created recipe!')
@@ -286,7 +289,9 @@ def select_recipe_flow(user_id):
 def update_recipe_flow(user_id):
     recipe_id = select_recipe_flow(user_id)
     if recipe_id is not None:
-        body = enter_recipe_details(user_id)
+        body = None
+        while body is None:
+            body = enter_recipe_details(user_id)
         update_res = update_recipe(recipe_id, body)
         if update_res['status_code'] == 200:
             print('Successfully updated recipe!')
