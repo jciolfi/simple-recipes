@@ -1,3 +1,4 @@
+-- get_recipe: return recipe detials in one row with the given recipeID
 DELIMITER $$
 DROP PROCEDURE IF EXISTS get_recipe;
 CREATE PROCEDURE get_recipe(recipeID INT)
@@ -9,6 +10,7 @@ SELECT
   title,
   prep_time,
   servings,
+  instructions,
   GROUP_CONCAT(DISTINCT T.ingredient_amts SEPARATOR '@@') AS ingredients,
   tags,
   tools
@@ -20,6 +22,7 @@ FROM
     r.title,
     r.prep_time,
     r.servings,
+    r.instructions,
     CONCAT(ri.ingredient_name, '##', ri.amount) AS ingredient_amts,
     GROUP_CONCAT(DISTINCT tg.tag_name SEPARATOR '##') AS tags, 
     GROUP_CONCAT(DISTINCT tl.tool_name SEPARATOR '##') AS tools
@@ -48,6 +51,7 @@ END $$
 DELIMITER ;
 
 
+-- get_user: return user details for the given userID
 DELIMITER $$
 DROP PROCEDURE IF EXISTS get_user;
 CREATE PROCEDURE get_user(userID INT)
