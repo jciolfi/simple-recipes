@@ -351,8 +351,10 @@ def delete_account_flow(user_id):
             print('Successfully deleted account!')
         else:
             print(f'Error: {update_res["data"]["message"]}. Please try again.\n')
+        return auth_flow()
     elif confirmation == 'n':
         print('Your account was not deleted.')
+        return user_id
     else:
         print('You must enter one of "y" or "n". Please try again.\n')
         delete_account_flow(user_id)
@@ -382,8 +384,7 @@ Enter a number to perform the corresponding action: '''
         elif action_id == '5':
             user_id = auth_flow()
         elif action_id == '6':
-            delete_account_flow(user_id)
-            user_id = auth_flow()
+            user_id = delete_account_flow(user_id)
         elif action_id == '7':
             break
         else:
