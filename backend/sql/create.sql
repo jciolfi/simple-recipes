@@ -23,7 +23,7 @@ CREATE TABLE recipe_ingredients (
 	recipe_ingredient_id INT PRIMARY KEY,
 	recipe_id INT NOT NULL,
     ingredient_name VARCHAR(255) NOT NULL,
-    amount INT NOT NULL,
+    amount VARCHAR(255) NOT NULL,
     UNIQUE (recipe_id, ingredient_name),
     FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id)
 		ON UPDATE CASCADE ON DELETE CASCADE

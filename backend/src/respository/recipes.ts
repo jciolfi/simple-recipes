@@ -29,10 +29,10 @@ export function getRecipeByID(recipeID: number): Promise<RecipeResponse | undefi
       } else if (!results || results.length === 0 || results[0].length === 0) {
         resolve(undefined);
       } else {
-        const ingredients: { ingredientName: string, amount: number }[] = [];
+        const ingredients: { ingredientName: string, amount: string }[] = [];
         results[0][0].ingredients.split('@@').forEach(i => {
           const items = i.split('##');
-          ingredients.push({ ingredientName: items[0], amount: +items[1] });
+          ingredients.push({ ingredientName: items[0], amount: items[1] });
         });
 
         let recipe: RecipeResponse = {
@@ -125,10 +125,10 @@ export function getRecipesByCriteria(
           let recipes: RecipeResponse[] = [];
 
           results.forEach(result => {
-            const ingredients: { ingredientName: string, amount: number }[] = [];
+            const ingredients: { ingredientName: string, amount: string }[] = [];
             results[0].ingredients.split('@@').forEach(i => {
               const items = i.split('##');
-              ingredients.push({ ingredientName: items[0], amount: +items[1] });
+              ingredients.push({ ingredientName: items[0], amount: items[1] });
             });
 
             recipes.push({
@@ -231,7 +231,7 @@ function insertRecipeAssociations(recipeID: number, recipe: UpsertRecipeRequest)
   // Insert into recipe_ingredients table
   const ingredientVals: string[] = [];
   recipe.ingredients.forEach(i => {
-    ingredientVals.push(`(${recipeID}, '${i.ingredientName}', ${i.amount})`);
+    ingredientVals.push(`(${recipeID}, '${i.ingredientName}', '${i.amount}')`);
   });
   const ingredientsInsert = 
   `INSERT INTO recipe_ingredients (recipe_id, ingredient_name, amount)

@@ -14,7 +14,7 @@ export interface RecipeResponse {
   prepTime: number;
   servings: number;
   instructions: string;
-  ingredients: { ingredientName: string, amount: number }[];
+  ingredients: { ingredientName: string, amount: string }[];
   tools: {toolID: number, toolName: string }[];
   tags: {tagID: number, tagName: string}[];
 }
@@ -25,7 +25,7 @@ export interface UpsertRecipeRequest {
   prepTime: number;
   servings: number;
   instructions: string;
-  ingredients: { ingredientName: string, amount: number }[];
+  ingredients: { ingredientName: string, amount: string }[];
   tools: number[];
   tags: number[];
 }
