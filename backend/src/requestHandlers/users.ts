@@ -4,7 +4,6 @@ import { CreateUserRequest, UserResponse, ResponseEnvelope, LoginUserResponse } 
 
 
 export async function createUserHandler(user: CreateUserRequest): Promise<ResponseEnvelope<UserResponse>> {
-  console.log(user);
   if (!user || !user.email || !user.pass || !user.username) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
@@ -37,11 +36,10 @@ export async function createUserHandler(user: CreateUserRequest): Promise<Respon
   }
 
   // check valid username (alphanumeric)
-  console.log(user.username);
   if (/\W|_/.test(user.username)) {
     return {
       statusCode: StatusCodes.BAD_REQUEST,
-      error: { message: `Invalid username ${user.username}, username must be alphanumberic` }
+      error: { message: `Invalid username ${user.username}, username must be alphanumeric` }
     };
   }
   const uniqueUsername = await isUniqueUsername(user.username);
