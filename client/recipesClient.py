@@ -262,41 +262,44 @@ def list_existing_recipes(user_id):
         return []
 
 
-def select_recipe_flow(user_id):
+def select_recipe_flow(user_recipes):
     recipe_id = None
-    user_recipes = list_existing_recipes(user_id)
-    if len(user_recipes) > 0:
-        try:
-            recipe_idx = int(input('Choose the recipe number you would like to edit: '))
-            assert (1 <= recipe_idx <= len(user_recipes))
-            recipe_id = user_recipes[recipe_idx - 1]['recipeID']
-        except:
-            print('Please enter a valid recipe number from the list.\n')
-            select_recipe_flow(user_id)
-        get_res = get_recipe_by_id(recipe_id)
-        if get_res['status_code'] == 200:
-            print('\nHere are the existing details:')
-            recipe_details = get_res["data"].copy()
-            del recipe_details["recipeID"]
-            del recipe_details["authorName"]
-            print_json(recipe_details)
-            print()
-        else:
-            print('Warning: could not retrieve existing recipe details')
+    try:
+        recipe_idx = int(input('Choose the recipe number you would like to edit: '))
+        assert (1 <= recipe_idx <= len(user_recipes))
+        recipe_id = user_recipes[recipe_idx - 1]['recipeID']
+    except:
+        print('You must enter a valid recipe number from the list. Please try again.\n')
+        return None
+    get_res = get_recipe_by_id(recipe_id)
+    if get_res['status_code'] == 200:
+        print('\nHere are the existing details:')
+        recipe_details = get_res["data"].copy()
+        del recipe_details["recipeID"]
+        del recipe_details["authorName"]
+        print_json(recipe_details)
+        print()
+    else:
+        print('Warning: could not retrieve existing recipe details')
     return recipe_id
 
 
 def update_recipe_flow(user_id):
-    recipe_id = select_recipe_flow(user_id)
-    if recipe_id is not None:
-        body = None
-        while body is None:
-            body = enter_recipe_details(user_id)
-        update_res = update_recipe(recipe_id, body)
-        if update_res['status_code'] == 200:
-            print('Successfully updated recipe!')
-        else:
-            print(f'Error: {update_res["data"]["message"]}. Please try again.\n')
+    user_recipes = list_existing_recipes(user_id)
+    if len(user_recipes) == 0:
+        return
+
+    recipe_id = None
+    while recipe_id is None:
+        recipe_id = select_recipe_flow(user_recipes)
+    body = None
+    while body is None:
+        body = enter_recipe_details(user_id)
+    update_res = update_recipe(recipe_id, body)
+    if update_res['status_code'] == 200:
+        print('Successfully updated recipe!')
+    else:
+        print(f'Error: {update_res["data"]["message"]}. Please try again.\n')
 
 
 def search_recipe_flow():
@@ -315,11 +318,16 @@ def search_recipe_flow():
         else:
             print(f'Error: {search_res["data"]["message"]}. Please try again.\n')
     except:
-        print('Invalid input recieved. Please try again.\n')
+        print('Invalid input received. Please try again.\n')
 
 
 def delete_recipe_flow(user_id):
-    recipe_id = select_recipe_flow(user_id)
+    user_recipes = list_existing_recipes(user_id)
+    if len(user_recipes) == 0:
+        return
+    recipe_id = None
+    while recipe_id is None:
+        recipe_id = select_recipe_flow(user_recipes)
     confirmation = input('\nAre you sure you want to delete this recipe? (y/n):').lower()
     if confirmation == 'y':
         delete_res = delete_recipe(recipe_id)
@@ -336,7 +344,7 @@ def delete_recipe_flow(user_id):
 def delete_account_flow(user_id):
     print('Your existing recipes:')
     user_recipes = list_existing_recipes(user_id)
-    confirmation = input('\nAre you sure you want to delete your account? (y/n):').lower()
+    confirmation = input('Are you sure you want to delete your account? (y/n):').lower()
     if confirmation == 'y':
         delete_res = delete_account(user_id)
         if delete_res['status_code'] == 200:
@@ -347,6 +355,7 @@ def delete_account_flow(user_id):
         print('Your account was not deleted.')
     else:
         print('You must enter one of "y" or "n". Please try again.\n')
+        delete_account_flow(user_id)
 
 def run_simplerecipes():
     user_id = auth_flow()
