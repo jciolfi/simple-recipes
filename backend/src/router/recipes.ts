@@ -24,6 +24,7 @@ export default function addRecipeRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `POST recipe internal error`
       });
@@ -49,6 +50,7 @@ export default function addRecipeRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `PUT recipe with ID ${req.params.recipeID} internal error`
       });
@@ -65,6 +67,7 @@ export default function addRecipeRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `GET recipe by criteria internal error`
       });
@@ -81,6 +84,7 @@ export default function addRecipeRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `GET recipe by criteria internal error`
       });
@@ -97,6 +101,7 @@ export default function addRecipeRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `GET recipe by ID ${req.params.recipeID} internal error`
       });
@@ -116,6 +121,7 @@ export default function addRecipeRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `GET recipe by criteria internal error`
       });
@@ -132,6 +138,7 @@ export default function addRecipeRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `DELETE recipe by ID ${req.params.recipeID} internal error`
       });

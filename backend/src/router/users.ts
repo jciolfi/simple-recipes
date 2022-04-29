@@ -18,6 +18,7 @@ export default function addUserRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `POST users internal error`
       });
@@ -37,6 +38,7 @@ export default function addUserRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `POST user login internal error`
       });
@@ -53,6 +55,7 @@ export default function addUserRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `GET user by ID ${req.params.userID} internal error`
       });
@@ -69,6 +72,7 @@ export default function addUserRoutes(app: Express) {
         res.status(envelope.statusCode).json(envelope.error);
       }
     } catch (err) {
+      console.log(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: `DELETE user by ID ${req.params.userID} internal error`
       });

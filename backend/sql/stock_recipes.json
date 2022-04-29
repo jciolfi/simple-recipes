@@ -1,0 +1,136 @@
+[
+  {
+    "authorID": 1,
+    "title": "mashed potatoes",
+    "prepTime": 30,
+    "servings": 4,
+    "instructions": "peel potatoes. boil potatoes in pot. mash potatoes. stir and add butter.",
+    "ingredients": [
+        {
+            "ingredientName": "russet potatoes",
+            "amount": "4 medium-sized"
+        },
+        {
+            "ingredientName": "butter",
+            "amount": "1 stick"
+        }
+    ],
+    "tools": [4,23],
+    "tags": [3,8,13]
+  },
+  {
+    "authorID": 1,
+    "title": "PB & J",
+    "prepTime": 5,
+    "servings": 1,
+    "instructions": "spread PB on one side of bread and Jelly on other. Combine.",
+    "ingredients": [
+        {
+            "ingredientName": "Peanut butter",
+            "amount": "1 jar"
+        },
+        {
+            "ingredientName": "Grape jelly",
+            "amount": "1 jar"
+        },
+        {
+            "ingredientName": "Bread",
+            "amount": "2 slices"
+        }
+    ],
+    "tools": [24],
+    "tags": [3,7]
+  },
+  {
+    "authorID": 1,
+    "title": "chicken tenders",
+    "prepTime": 5,
+    "servings": 3,
+    "instructions": "Use medium-high heat. Add oil. Season chicken w/ spice blend. Sear for 5 mins on each side",
+    "ingredients": [
+        {
+            "ingredientName": "Chicken",
+            "amount": "2 lbs"
+        },
+        {
+            "ingredientName": "Adobo seasoning blend",
+            "amount": "10 tablespoons"
+        },
+        {
+            "ingredientName": "Olive oil",
+            "amount": "Enough to coat pan"
+        }
+    ],
+    "tools": [2,8,17],
+    "tags": [1]
+  },
+  {
+    "authorID": 1,
+    "title": "Deli Sandwich",
+    "prepTime": 5,
+    "servings": 2,
+    "instructions": "Spread mayo, add turkey, add lettuce, add tomato, add bacon",
+    "ingredients": [
+        {
+            "ingredientName": "Turkey",
+            "amount": "4 slices"
+        },
+        {
+            "ingredientName": "lettuce",
+            "amount": "1 handful"
+        },
+        {
+            "ingredientName": "tomato",
+            "amount": "3 slices"
+        },
+        {
+            "ingredientName": "bacon",
+            "amount": "3 strips"
+        }
+    ],
+    "tools": [24],
+    "tags": [3,6,10]
+  },
+  {
+    "authorID": 1,
+    "title": "Quesadilla",
+    "prepTime": 15,
+    "servings": 1,
+    "instructions": "Sprinkle cheese on tortilla. Fold and pan sear on medium-high for 2 mins each side.",
+    "ingredients": [
+        {
+            "ingredientName": "Shredded cheese",
+            "amount": "Enough to coat tortilla"
+        },
+        {
+            "ingredientName": "Large tortilla",
+            "amount": "1"
+        }
+    ],
+    "tools": [1],
+    "tags": [3,10]
+  },
+  {
+    "authorID": 1,
+    "title": "Pasta & Red Sauce",
+    "prepTime": 25,
+    "servings": 8,
+    "instructions": "Boil pasta in salted water according to box instructions. Strain, add red sauce into pot and stir. Add parmesan on top",
+    "ingredients": [
+        {
+            "ingredientName": "parmesan cheese",
+            "amount": "desired amount"
+        },
+        {
+            "ingredientName": "Boxed Pasta",
+            "amount": "1 box"
+        },
+        {
+            "ingredientName": "Sauce in jar",
+            "amount": "1 jar"
+        }
+    ],
+    "tools": [4,8,12],
+    "tags": [6]
+  }  
+]

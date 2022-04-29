@@ -186,10 +186,10 @@ def enter_recipe_details(author_id):
         title = input('Enter title of recipe: ')
         assert (len(title) > 0)
 
-        num_ingredients = int(input('How many ingredients required (1-10): '))
-        assert (1 <= num_ingredients <= 10)
+        num_ingredients = input('How many ingredients required (1-10): ')
+        assert (1 <= int(num_ingredients) <= 10)
         ingredients = []
-        for i in range(num_ingredients):
+        for i in range(int(num_ingredients)):
             name = input('Enter description of ingredient (cannot contain @@ or ##): ')
             assert (len(name) > 0)
             assert (not ('@@' in name or '##' in name))
@@ -200,11 +200,11 @@ def enter_recipe_details(author_id):
             }
             ingredients.append(ingredient)
 
-        prep_time = int(input('Enter time it takes to prepare recipe in minutes: '))
-        assert (prep_time > 0)
+        prep_time = input('Enter time it takes to prepare recipe in minutes: ')
+        assert (int(prep_time) > 0)
 
-        servings = int(input('Enter number of servings: '))
-        assert (servings > 0)
+        servings = input('Enter number of servings: ')
+        assert (int(servings) > 0)
 
         instructions = input('Enter the recipe instructions (250 words or less): ')
         assert (len(instructions.split(' ')) <= 250)
@@ -220,20 +220,20 @@ def enter_recipe_details(author_id):
         tags = [int(t) for t in tags_list.split(',')]
         if not all(1 <= t <= len(avail_tags) for t in tags):
             raise ValueError()
+
+        return {
+            'authorID': author_id,
+            'title': title,
+            'prepTime': int(prep_time),
+            'servings': int(servings),
+            'instructions': instructions,
+            'ingredients': ingredients,
+            'tools': tools,
+            'tags': tags
+        }
     except:
         print('Invalid input received. Please follow the prompts and enter the recipe again.\n')
         enter_recipe_details(author_id)
-
-    return {
-        'authorID': author_id,
-        'title': title,
-        'prepTime': prep_time,
-        'servings': servings,
-        'instructions': instructions,
-        'ingredients': ingredients,
-        'tools': tools,
-        'tags': tags
-    }
 
 
 def create_recipe_flow(user_id):
@@ -294,7 +294,7 @@ def update_recipe_flow(user_id):
             print(f'Error: {update_res["data"]["message"]}. Please try again.\n')
 
 
-def search_recipe_flow(user_id):
+def search_recipe_flow():
     try:
         print('To omit title or tags from query, just press enter in input box.')
         title = input('Enter recipe name: ')
@@ -347,14 +347,14 @@ def run_simplerecipes():
     user_id = auth_flow()
     while True:
         action_menu = '''
-    1) Create a new recipe
-    2) Update one of your existing recipes
-    3) Search for a recipe
-    4) Delete one of your existing recipes
-    5) Switch accounts
-    6) Delete your account
-    7) End the program
-    Enter a number to perform the corresponding action: '''
+1) Create a new recipe
+2) Update one of your existing recipes
+3) Search for a recipe
+4) Delete one of your existing recipes
+5) Switch accounts
+6) Delete your account
+7) End the program
+Enter a number to perform the corresponding action: '''
         action_id = input(action_menu)
         print()
         if action_id == '1':
@@ -362,7 +362,7 @@ def run_simplerecipes():
         elif action_id == '2':
             update_recipe_flow(user_id)
         elif action_id == '3':
-            search_recipe_flow(user_id)
+            search_recipe_flow()
         elif action_id == '4':
             delete_recipe_flow(user_id)
         elif action_id == '5':
